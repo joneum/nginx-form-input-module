@@ -1,7 +1,7 @@
 Name
 ====
 
-form-input-nginx-module - read the fields of an `application/x-www-form-urlencoded`
+nginx-form-input-module - read the fields of an `application/x-www-form-urlencoded`
 request body into nginx variables.
 
 Table of Contents
@@ -47,7 +47,7 @@ normally would.
 Status
 ======
 
-[![CI](https://github.com/joneum/form-input-nginx-module/actions/workflows/ci.yml/badge.svg)](https://github.com/joneum/form-input-nginx-module/actions/workflows/ci.yml)
+[![CI](https://github.com/joneum/nginx-form-input-module/actions/workflows/ci.yml/badge.svg)](https://github.com/joneum/nginx-form-input-module/actions/workflows/ci.yml)
 
 The module is maintained and released here.  Every push and every pull
 request is built against a range of nginx releases and run through the
@@ -140,7 +140,7 @@ tar -xzf "nginx-$v.tar.gz"
 cd "nginx-$v"
 
 ./configure --add-module=/path/to/ngx_devel_kit \
-    --add-module=/path/to/form-input-nginx-module
+    --add-module=/path/to/nginx-form-input-module
 
 make -j4
 make install
@@ -160,7 +160,7 @@ nginx refuses to start when that directive is used in a build without
 it, because nothing else can read the variable it produces.
 
 Released tarballs of this module are on the
-[tags page](https://github.com/joneum/form-input-nginx-module/tags).
+[tags page](https://github.com/joneum/nginx-form-input-module/tags).
 
 Building as a dynamic module
 ----------------------------
@@ -443,7 +443,7 @@ modules that use it:
 ./configure --prefix=/tmp/nginx-test \
     --add-module=/path/to/ngx_devel_kit \
     --add-module=/path/to/echo-nginx-module \
-    --add-module=/path/to/form-input-nginx-module \
+    --add-module=/path/to/nginx-form-input-module \
     --add-module=/path/to/set-misc-nginx-module \
     --add-module=/path/to/array-var-nginx-module
 make && make install
@@ -458,7 +458,7 @@ Source Repository
 =================
 
 This module is hosted at
-[github.com/joneum/form-input-nginx-module](https://github.com/joneum/form-input-nginx-module)
+[github.com/joneum/nginx-form-input-module](https://github.com/joneum/nginx-form-input-module)
 and maintained by Jochen Neumeister.
 
 [Back to TOC](#table-of-contents)
@@ -467,7 +467,7 @@ Bugs and Patches
 ================
 
 Please report bugs and send patches through the
-[GitHub issue tracker](https://github.com/joneum/form-input-nginx-module/issues)
+[GitHub issue tracker](https://github.com/joneum/nginx-form-input-module/issues)
 of this repository.
 
 [Back to TOC](#table-of-contents)
