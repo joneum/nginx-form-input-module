@@ -133,7 +133,7 @@ in every build, and it has to be named before this module on the
 together:
 
 ```bash
-v=1.31.5   # whatever the current release is
+v=1.31.6   # whatever the current release is
 
 wget "https://nginx.org/download/nginx-$v.tar.gz"
 tar -xzf "nginx-$v.tar.gz"
@@ -361,7 +361,7 @@ skipped rather than read into a variable.
 * A field value is bytes out of the request and nothing in it is
 escaped, checked or refused.  One that holds CR and LF turns into more
 than one header line as soon as it reaches `proxy_set_header`, and nginx
-does not stop that.  Measured against 1.31.5, a field holding
+does not stop that.  Measured against 1.31.6, a field holding
 `bob<CR><LF>X-Injected: yes` arrives at the upstream as two headers, and
 it does so with either encoding.  What multipart changes is how likely
 it is: a `<textarea>` sends line breaks as they are, where a urlencoded
@@ -397,13 +397,14 @@ anything is pushed the test suite is run against the current mainline
 and stable releases, and against older ones down to 1.22, which is the
 oldest release it is checked on.
 
-One caveat, and it is not this module's doing: on nginx 1.30.4
+One caveat, and it is not this module's doing: on the 1.30 stable line
 array-var-nginx-module and set-misc-nginx-module terminate the worker
 process on every request that passes through `array_join` or
 `set_unescape_uri`.  That leaves `set_form_input_multi` and decoding
-unusable on that one release.  Their own test suites fail there
-completely and pass on the releases before and after it, in an nginx
-built without this module just the same.
+unusable there.  It showed first on 1.30.4 and 1.30.5 behaves the same
+way.  Their own test suites fail on that line and pass on 1.31.6, in an
+nginx built without this module just the same, which is why the 1.30
+releases are not in the matrix.
 
 [Back to TOC](#table-of-contents)
 
@@ -426,13 +427,13 @@ module.  `ci/build.sh` fetches those four at the versions the
 continuous integration pins and builds that nginx:
 
 ```bash
-ci/build.sh 1.31.5 /tmp/nginx-test
+ci/build.sh 1.31.6 /tmp/nginx-test
 TEST_NGINX_BINARY=/tmp/nginx-test/sbin/nginx prove -r t/
 ```
 
 The same script builds the two other shapes the workflow checks.
-`ci/build.sh 1.31.5 /tmp/nginx-dyn dynamic` makes every module a
-loadable object, and `ci/build.sh 1.31.5 /tmp/nginx-noav no-array-var`
+`ci/build.sh 1.31.6 /tmp/nginx-dyn dynamic` makes every module a
+loadable object, and `ci/build.sh 1.31.6 /tmp/nginx-noav no-array-var`
 leaves array-var out, which is the only way to reach the configuration
 error that `set_form_input_multi` raises in such a build.
 

@@ -3,7 +3,7 @@
 # Build an nginx that carries this module and the modules its test suite
 # needs.  The continuous integration workflow runs this, and so can you:
 #
-#     ci/build.sh 1.31.5 /tmp/nginx-test
+#     ci/build.sh 1.31.6 /tmp/nginx-test
 #     TEST_NGINX_BINARY=/tmp/nginx-test/sbin/nginx prove -r t/
 #
 # usage: ci/build.sh <nginx version> <install prefix> [mode]

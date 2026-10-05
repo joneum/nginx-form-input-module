@@ -21,11 +21,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 1.22.0 is the oldest release the README promises, 1.31.5 the
-        # current mainline.  1.30.4 is deliberately absent: array-var
-        # and set-misc kill the worker process on that one release, in
-        # an nginx built without this module just the same.
-        nginx: ['1.22.0', '1.24.0', '1.26.3', '1.28.0', '1.31.5']
+        # 1.22.0 is the oldest release the README promises, 1.31.6 the
+        # current mainline.  The whole 1.30 stable line is deliberately
+        # absent: array-var and set-misc kill the worker process on
+        # 1.30.4 and on 1.30.5, in an nginx built without this module
+        # just the same.  Their own test suites fail there and pass on
+        # 1.31.6.
+        nginx: ['1.22.0', '1.24.0', '1.26.3', '1.28.0', '1.31.6']
 
     steps:
       - uses: actions/checkout@v7
@@ -67,7 +69,7 @@ jobs:
             libpcre2-dev zlib1g-dev libssl-dev
 
       - name: Build without array-var
-        run: ci/build.sh 1.31.5 "$HOME/nginx" no-array-var
+        run: ci/build.sh 1.31.6 "$HOME/nginx" no-array-var
 
       - name: The directive has to be refused
         run: ci/check-no-array-var.sh "$HOME/nginx"
@@ -97,7 +99,7 @@ jobs:
           echo "PERL5LIB=$HOME/perl5/lib/perl5" >> "$GITHUB_ENV"
 
       - name: Build every module as a loadable object
-        run: ci/build.sh 1.31.5 "$HOME/nginx" dynamic
+        run: ci/build.sh 1.31.6 "$HOME/nginx" dynamic
 
       - name: Run the test suite against the loaded modules
         run: |
@@ -123,13 +125,13 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Build and run the suite in a FreeBSD virtual machine
-        uses: vmactions/freebsd-vm@v1.5.6
+        uses: vmactions/freebsd-vm@v1.5.9
         with:
           release: '14'
           prepare: |
             pkg install -y git pcre2 p5-Test-Nginx
           run: |
-            ci/build.sh 1.31.5 "$HOME/nginx"
+            ci/build.sh 1.31.6 "$HOME/nginx"
             # the job runs as root, and Test::Nginx then writes "user
             # root;" into its configuration.  root has no group of that
             # name here, it is in wheel
@@ -163,7 +165,7 @@ jobs:
           echo "PERL5LIB=$HOME/perl5/lib/perl5" >> "$GITHUB_ENV"
 
       - name: Build nginx
-        run: ci/build.sh 1.31.5 "$HOME/nginx"
+        run: ci/build.sh 1.31.6 "$HOME/nginx"
 
       - name: Run the test suite under valgrind
         run: |
