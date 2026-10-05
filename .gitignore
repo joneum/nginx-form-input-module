@@ -4,6 +4,10 @@ t/servroot/
 # created by ci/build.sh
 ci-work/
 
+# leftovers from patch(1)
+*.orig
+*.rej
+
 # editor leftovers
 *~
 *.swp
