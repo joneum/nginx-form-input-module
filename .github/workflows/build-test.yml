@@ -1,0 +1,83 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    # Monday morning, so a new nginx release that breaks the module shows
+    # up here and not in somebody's build
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  suite:
+    name: nginx ${{ matrix.nginx }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # 1.22.0 is the oldest release the README promises, 1.31.6 the
+        # current mainline.  The whole 1.30 stable line is deliberately
+        # absent: array-var and set-misc kill the worker process on
+        # 1.30.4 and on 1.30.5, in an nginx built without this module
+        # just the same.  Their own test suites fail there and pass on
+        # 1.31.6.
+        nginx: ['1.22.0', '1.24.0', '1.26.3', '1.28.0', '1.31.6']
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup
+
+      - name: Build nginx ${{ matrix.nginx }}
+        run: ci/build.sh '${{ matrix.nginx }}' "$HOME/nginx"
+
+      - name: Run the test suite
+        run: TEST_NGINX_BINARY="$HOME/nginx/sbin/nginx" prove -r t/
+
+  dynamic:
+    name: loadable modules
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup
+
+      - name: Build every module as a loadable object
+        run: ci/build.sh 1.31.6 "$HOME/nginx" dynamic
+
+      - name: Run the test suite against the loaded modules
+        run: |
+          mods=
+          for so in "$HOME"/nginx/modules/*.so; do
+            mods="$mods $so"
+          done
+          echo "loading:$mods"
+          TEST_NGINX_LOAD_MODULES="$mods" \
+            TEST_NGINX_BINARY="$HOME/nginx/sbin/nginx" prove -r t/
+
+  no-array-var:
+    name: build without array-var
+    runs-on: ubuntu-latest
+    # set_form_input_multi produces a value only array-var-nginx-module
+    # can read, so nginx has to refuse the directive in a build without
+    # it.  The suite cannot reach that case; it always builds array-var in.
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup
+        with:
+          test-nginx: 'false'
+
+      - name: Build without array-var-nginx-module
+        run: ci/build.sh 1.31.6 "$HOME/nginx" no-array-var
+
+      - name: The directive has to be refused, and only that one
+        run: ci/check-no-array-var.sh "$HOME/nginx"

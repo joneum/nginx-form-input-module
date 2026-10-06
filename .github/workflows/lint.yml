@@ -1,0 +1,57 @@
+name: Lint
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    # Monday morning, so a new nginx release that breaks the module shows
+    # up here and not in somebody's build
+    - cron: '17 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shell:
+    name: shell scripts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends shellcheck
+
+      - name: Check every script under ci/ and t/
+        run: |
+          # the nginx addon "config" files are fragments that nginx's own
+          # configure sources, not standalone scripts, so they stay out
+          files=$(find ci t -name '*.sh' 2>/dev/null | sort)
+          if [ -z "$files" ]; then
+            echo "no scripts to check"
+            exit 0
+          fi
+          echo "$files"
+          # shellcheck disable=SC2086
+          shellcheck --severity=warning --shell=sh $files
+
+  workflows:
+    name: workflow definitions
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run actionlint
+        env:
+          ACTIONLINT_VERSION: 1.7.7
+        run: |
+          url=https://github.com/rhysd/actionlint/releases/download
+          curl -sSfL -o actionlint.tar.gz \
+            "$url/v$ACTIONLINT_VERSION/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          tar xzf actionlint.tar.gz actionlint
+          ./actionlint -color

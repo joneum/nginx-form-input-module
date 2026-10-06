@@ -99,6 +99,15 @@ fi
 
 cd "$WORK/nginx-$NGINX"
 
+# the sanitizer workflow builds through this script as well, so that
+# there is one build path and not two that drift apart
+if [ -n "${CI_CC_OPT:-}" ]; then
+	set -- "$@" --with-cc-opt="$CI_CC_OPT"
+fi
+if [ -n "${CI_LD_OPT:-}" ]; then
+	set -- "$@" --with-ld-opt="$CI_LD_OPT"
+fi
+
 echo "--- configure ($MODE) ---"
 ./configure --prefix="$PREFIX" --with-debug --with-http_ssl_module "$@" \
 	> "$WORK/configure-$NGINX.log" 2>&1 ||
