@@ -24,24 +24,6 @@ request body into nginx variables.
 [lint-badge]: https://github.com/joneum/nginx-form-input-module/actions/workflows/lint.yml/badge.svg
 [lint-link]: https://github.com/joneum/nginx-form-input-module/actions/workflows/lint.yml
 
-Table of Contents
-=================
-
-* [Name](#name)
-* [Description](#description)
-* [Status](#status)
-* [Synopsis](#synopsis)
-* [Installation](#installation)
-    * [Building as a dynamic module](#building-as-a-dynamic-module)
-* [Directives](#directives)
-    * [set_form_input](#set_form_input)
-    * [set_form_input_multi](#set_form_input_multi)
-    * [form_input_multipart](#form_input_multipart)
-* [Limitations](#limitations)
-* [Compatibility](#compatibility)
-* [Test Suite](#test-suite)
-* [License](#license)
-
 Description
 ===========
 
