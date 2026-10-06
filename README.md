@@ -40,8 +40,6 @@ Table of Contents
 * [Limitations](#limitations)
 * [Compatibility](#compatibility)
 * [Test Suite](#test-suite)
-* [Source Repository](#source-repository)
-* [Bugs and Patches](#bugs-and-patches)
 * [License](#license)
 
 Description
@@ -62,8 +60,6 @@ Only the locations that name a directive are affected.  Everywhere else
 the module stays out of the way and nginx streams request bodies as it
 normally would.
 
-[Back to TOC](#table-of-contents)
-
 Status
 ======
 
@@ -75,8 +71,6 @@ the module is packaged for.  A run under valgrind comes on top of that
 on everything but a pull request.  The suite is part of this repository,
 so none of it has to be taken on trust.  See
 [Test Suite](#test-suite) and [Compatibility](#compatibility).
-
-[Back to TOC](#table-of-contents)
 
 Synopsis
 ========
@@ -139,8 +133,6 @@ location /tags {
 }
 ```
 
-[Back to TOC](#table-of-contents)
-
 Installation
 ============
 
@@ -192,8 +184,6 @@ ngx_devel_kit has to be loaded first:
 load_module modules/ndk_http_module.so;
 load_module modules/ngx_http_form_input_module.so;
 ```
-
-[Back to TOC](#table-of-contents)
 
 Directives
 ==========
@@ -258,8 +248,6 @@ also accepted it in a `server` or `http` block, where it had no effect
 and left the variable empty without a warning.  nginx now refuses to
 start on such a configuration.
 
-[Back to TOC](#table-of-contents)
-
 set_form_input_multi
 --------------------
 
@@ -295,8 +283,6 @@ field values.  That is a property of the calling convention array-var
 defines, and array-var's own array variables behave the same way.  In a
 build without array-var nothing could read the variable at all, so nginx
 refuses to start when the directive is used there.
-
-[Back to TOC](#table-of-contents)
 
 form_input_multipart
 --------------------
@@ -363,8 +349,6 @@ may well read a field.  That is the safe direction for a value that
 travels on, and the wrong one for a value that is meant to hold a
 request back.  Do not build a gate out of it.
 
-[Back to TOC](#table-of-contents)
-
 Limitations
 ===========
 
@@ -405,8 +389,6 @@ which is why older documentation asked for `client_max_body_size` and
 `client_body_buffer_size` to be set to the same value.  That is no
 longer necessary.
 
-[Back to TOC](#table-of-contents)
-
 Compatibility
 =============
 
@@ -423,8 +405,6 @@ unusable there.  It showed first on 1.30.4 and 1.30.5 behaves the same
 way.  Their own test suites fail on that line and pass on 1.31.6, in an
 nginx built without this module just the same, which is why the 1.30
 releases are not in the matrix.
-
-[Back to TOC](#table-of-contents)
 
 Test Suite
 ==========
@@ -471,27 +451,8 @@ make && make install
 `valgrind.suppress` in the repository root is picked up automatically
 when the tests are run with `TEST_NGINX_USE_VALGRIND`.
 
-[Back to TOC](#table-of-contents)
-
-Source Repository
-=================
-
-https://github.com/joneum/nginx-form-input-module
-
-[Back to TOC](#table-of-contents)
-
-Bugs and Patches
-================
-
-Please report bugs and send patches through the
-[GitHub issue tracker](https://github.com/joneum/nginx-form-input-module/issues)
-of this repository.
-
-[Back to TOC](#table-of-contents)
-
 License
 =======
 
 BSD 2-Clause, see [LICENSE](LICENSE).
 
-[Back to TOC](#table-of-contents)
