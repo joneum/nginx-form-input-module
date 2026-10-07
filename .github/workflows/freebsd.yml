@@ -30,7 +30,8 @@ jobs:
           prepare: |
             pkg install -y git pcre2 p5-Test-Nginx
           run: |
-            ci/build.sh 1.31.6 "$HOME/nginx"
+            . .github/versions.env
+            ci/build.sh "$NGINX_VERSION" "$HOME/nginx"
             # the job runs as root, and Test::Nginx then writes "user
             # root;" into its configuration.  root has no group of that
             # name here, it is in wheel

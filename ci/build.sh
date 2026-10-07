@@ -29,39 +29,66 @@ WORK=${CI_WORK:-$SRC/ci-work}
 DEPS=$WORK/deps
 JOBS=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 2)
 
-NDK_TAG=${NDK_TAG:-v0.3.5}
-ECHO_TAG=${ECHO_TAG:-v0.65}
-SETMISC_TAG=${SETMISC_TAG:-v0.34}
-ARRAYVAR_TAG=${ARRAYVAR_TAG:-v0.06}
+# Every version, digest and commit comes from one file, so a run here pins
+# exactly what a continuous integration run pins.  Deliberately not
+# overridable from the environment: a version and the digest that proves it
+# have to move together, and an override would separate them.
+PINS=$SRC/.github/versions.env
+[ -r "$PINS" ] || {
+	echo "ci/build.sh: cannot read $PINS" >&2
+	exit 1
+}
+# shellcheck source=../.github/versions.env
+. "$PINS"
 
 mkdir -p "$DEPS"
 
 fetch_module() {
 	name=$1
 	tag=$2
+	commit=$3
 
-	[ -d "$DEPS/$name" ] && return 0
+	if [ ! -d "$DEPS/$name" ]; then
+		git -c advice.detachedHead=false clone -q --depth 1 --branch "$tag" \
+			"https://github.com/openresty/$name.git" "$DEPS/$name"
+	fi
 
-	git -c advice.detachedHead=false clone -q --depth 1 --branch "$tag" \
-		"https://github.com/openresty/$name.git" "$DEPS/$name"
+	# Checked whether the clone was just made or was already lying here from
+	# an earlier run: a tag is a movable label, and a directory left behind
+	# is exactly as unproven as a fresh download.  What we agreed to build
+	# against is the commit the pin names.
+	got=$(git -C "$DEPS/$name" rev-parse HEAD)
+	if [ "$got" != "$commit" ]; then
+		echo "ci/build.sh: $name $tag is not at its pinned commit" >&2
+		echo "  expected $commit" >&2
+		echo "  got      $got" >&2
+		rm -rf "$DEPS/$name"
+		exit 1
+	fi
 }
 
-fetch_module ngx_devel_kit "$NDK_TAG"
-fetch_module echo-nginx-module "$ECHO_TAG"
-fetch_module set-misc-nginx-module "$SETMISC_TAG"
-fetch_module array-var-nginx-module "$ARRAYVAR_TAG"
+fetch_module ngx_devel_kit "$NDK_TAG" "$NDK_COMMIT"
+fetch_module echo-nginx-module "$ECHO_TAG" "$ECHO_COMMIT"
+fetch_module set-misc-nginx-module "$SETMISC_TAG" "$SETMISC_COMMIT"
+fetch_module array-var-nginx-module "$ARRAYVAR_TAG" "$ARRAYVAR_COMMIT"
 
 tarball=$WORK/nginx-$NGINX.tar.gz
 url=https://nginx.org/download/nginx-$NGINX.tar.gz
 
-if [ ! -s "$tarball" ]; then
-	# curl is a package on FreeBSD, fetch is in the base system
-	if command -v curl > /dev/null 2>&1; then
-		curl -sSfL -o "$tarball" "$url"
-	else
-		fetch -q -o "$tarball" "$url"
-	fi
+# The digest is looked up by version, so building another release means
+# writing its pin down first.  A missing pin is refused rather than waved
+# through: a check that skips itself when it has nothing to compare against
+# is not a check, it only looks like one.
+key=NGINX_$(echo "$NGINX" | tr . _)_SHA256
+eval "want=\${$key:-}"
+if [ -z "$want" ]; then
+	echo "ci/build.sh: no sha256 for nginx $NGINX in $PINS" >&2
+	echo "ci/build.sh: harvest one with" >&2
+	echo "    ci/fetch-verify.sh $url - $tarball" >&2
+	exit 1
 fi
+
+"$SRC/ci/fetch-verify.sh" "$url" "$want" "$tarball"
 
 rm -rf "$WORK/nginx-$NGINX"
 tar xzf "$tarball" -C "$WORK"

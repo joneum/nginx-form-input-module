@@ -33,7 +33,9 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Build nginx with both sanitizers
-        run: ci/build.sh 1.31.6 "$HOME/nginx"
+        run: |
+          . .github/versions.env
+          ci/build.sh "$NGINX_VERSION" "$HOME/nginx"
 
       - name: Run the test suite under the sanitizers
         run: |

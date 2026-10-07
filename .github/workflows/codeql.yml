@@ -40,7 +40,9 @@ jobs:
               - src
 
       - name: Build nginx with the module
-        run: ci/build.sh 1.31.6 "$HOME/nginx"
+        run: |
+          . .github/versions.env
+          ci/build.sh "$NGINX_VERSION" "$HOME/nginx"
 
       - name: Analyse
         uses: github/codeql-action/analyze@v3

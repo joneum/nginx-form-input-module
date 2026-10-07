@@ -14,20 +14,31 @@ permissions:
   contents: read
 
 jobs:
+  pins:
+    name: pins
+    runs-on: ubuntu-latest
+    # A matrix is read before any step of its own job runs, so the release
+    # list has to arrive from an earlier job.  Which releases, and why this
+    # module skips the 1.30 line, is written down in .github/versions.env.
+    outputs:
+      nginx: ${{ steps.read.outputs.nginx }}
+      version: ${{ steps.read.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: read
+        run: .github/scripts/pins.sh >> "$GITHUB_OUTPUT"
+
   suite:
     name: nginx ${{ matrix.nginx }}
+    needs: pins
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        # 1.22.0 is the oldest release the README promises, 1.31.6 the
-        # current mainline.  The whole 1.30 stable line is deliberately
-        # absent: array-var and set-misc kill the worker process on
-        # 1.30.4 and on 1.30.5, in an nginx built without this module
-        # just the same.  Their own test suites fail there and pass on
-        # 1.31.6.
-        nginx: ['1.22.0', '1.24.0', '1.26.3', '1.28.0', '1.31.6']
+        nginx: ${{ fromJSON(needs.pins.outputs.nginx) }}
 
     steps:
       - uses: actions/checkout@v7
@@ -42,6 +53,7 @@ jobs:
 
   dynamic:
     name: loadable modules
+    needs: pins
     runs-on: ubuntu-latest
 
     steps:
@@ -50,7 +62,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Build every module as a loadable object
-        run: ci/build.sh 1.31.6 "$HOME/nginx" dynamic
+        run: ci/build.sh '${{ needs.pins.outputs.version }}' "$HOME/nginx" dynamic
 
       - name: Run the test suite against the loaded modules
         run: |
@@ -64,6 +76,7 @@ jobs:
 
   no-array-var:
     name: build without array-var
+    needs: pins
     runs-on: ubuntu-latest
     # set_form_input_multi produces a value only array-var-nginx-module
     # can read, so nginx has to refuse the directive in a build without
@@ -77,7 +90,7 @@ jobs:
           test-nginx: 'false'
 
       - name: Build without array-var-nginx-module
-        run: ci/build.sh 1.31.6 "$HOME/nginx" no-array-var
+        run: ci/build.sh '${{ needs.pins.outputs.version }}' "$HOME/nginx" no-array-var
 
       - name: The directive has to be refused, and only that one
         run: ci/check-no-array-var.sh "$HOME/nginx"
