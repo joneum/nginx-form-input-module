@@ -6,6 +6,30 @@ Newest first.  Dates are release dates.
 
 ### Added
 
+- A reload test: `ci/reload.sh`, the per-module `ci/reload.conf` beside it,
+  and a workflow of its own.  nginx is reloaded eight times in a row and
+  after every one of them the module has to answer correctly, the worker
+  generation has to be the new one and nothing of the old one left, the
+  master's descriptor count has to be where it started, and no worker may
+  have died by signal.  A module that allocates or opens something per cycle
+  and never gives it back is invisible in normal use -- nothing fails,
+  nothing is logged, and the process grows by one cycle's worth on every
+  reload -- and a test suite cannot see it, because a suite starts nginx
+  once.
+- The probe asks the module, not the server.  A reload that left the module
+  behind still answers 200, so the check is the value `let` computed, the
+  field `set_form_input` read out of the body, the `Content-Encoding` header
+  only this module can set, or the file that came through the cache.
+- Deliberately no band on the master's resident size.  Measured here, a
+  healthy series grows the master by about twenty-five pages per reload, the
+  allocator keeping what it freed, while a leaked cycle pool is a handful of
+  pages.  Any band wide enough not to flap is wider than the thing it would
+  have to catch, so it could never fail for the right reason.  The descriptor
+  count is sharp and needs no band.
+- Proven against a planted leak before it was written down: one descriptor
+  opened per configuration load inside the directive handler took the
+  master's count from 10 to 18 over eight reloads and the check went red.
+
 - Every archive the build downloads is now verified against a sha256
   recorded in `.github/versions.env`: the nginx release and the actionlint
   release archive, through the new `ci/fetch-verify.sh`.  A changed archive,
