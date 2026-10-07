@@ -50,6 +50,22 @@ Newest first.  Dates are release dates.
 
 ### Changed
 
+- `valgrind.suppress` carries two entries instead of 6, and both say what
+  they hide.  Measured, not assumed: with an empty file the suite reports
+  exactly two things and nothing else, the environment array nginx keeps in
+  `ngx_set_environment` and the connection and event arrays it keeps in
+  `ngx_event_process_init`.  No invalid read, no uninitialised value, no
+  conditional jump -- so everything beyond those two suppressed something
+  that never happens. 5 of them were raw `--gen-suppressions`
+  output carrying `<insert_a_suppression_name_here>`, among them entries for
+  glibc's dynamic loader and for `exp-sgcheck`, a valgrind tool no workflow
+  here runs.  The file is now the same in all four module
+  repositories.
+- Both traces run through `ngx_single_process_cycle`, because Test::Nginx
+  starts nginx with `master_process off`.  An entry for the master's own path
+  could never be reached from this suite, which is why there is none: a
+  suppression nobody can check is worse than no suppression.
+
 - The single version the deep checks build stays on mainline, which is the
   one place this module cannot follow the rest: its test suite needs
   array-var and set-misc, and those kill the worker process on 1.30.4 and
