@@ -62,7 +62,7 @@ fetch_module() {
 		echo "ci/build.sh: $name $tag is not at its pinned commit" >&2
 		echo "  expected $commit" >&2
 		echo "  got      $got" >&2
-		rm -rf "$DEPS/$name"
+		rm -rf "${DEPS:?}/${name:?}"
 		exit 1
 	fi
 }

@@ -17,6 +17,13 @@ Newest first.  Dates are release dates.
   clone is refused if the tag no longer points at that commit.  A tag is a
   movable label, so pinning one alone does not say what was built.
 
+### Fixed
+
+- A cleanup in `ci/build.sh` spelled `rm -rf "$DEPS/$name"`.  Both parts are
+  always set, but an empty one would have taken the whole dependency
+  directory with it, and two empty ones the root.  Written `${DEPS:?}` now,
+  so the shell refuses instead.
+
 ### Changed
 
 - The single version the deep checks build stays on mainline, which is the
