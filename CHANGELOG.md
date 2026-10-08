@@ -50,6 +50,18 @@ Newest first.  Dates are release dates.
 
 ### Changed
 
+- Every job now carries a `timeout-minutes`, and the apt step in
+  `.github/actions/setup` is bounded with `timeout` and retried.  A mirror
+  that accepted the connection and then stopped answering held six jobs in
+  that step until GitHub's own six hour ceiling killed them -- 360 and 361
+  minutes for two of them.  The run produced no verdict at all and spent
+  about 36 hours of runner time doing it.  A step inside a composite action
+  cannot carry `timeout-minutes`, hence the explicit `timeout` there.  The
+  bounds are measured rather than guessed: across the four repositories the
+  slowest healthy job is CodeQL at 2.8 minutes and every other one stays
+  under 2.5, so 15 minutes leaves five times the headroom, with 20 for
+  CodeQL and 25 for the job that boots a virtual machine.
+
 - `valgrind.suppress` carries two entries instead of 6, and both say what
   they hide.  Measured, not assumed: with an empty file the suite reports
   exactly two things and nothing else, the environment array nginx keeps in

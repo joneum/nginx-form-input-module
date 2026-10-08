@@ -17,6 +17,7 @@ jobs:
   sanitizers:
     name: address and undefined behaviour
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     env:
       # nginx runs the little programs its configure compiles.  With leak

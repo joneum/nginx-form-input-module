@@ -17,6 +17,7 @@ jobs:
   analyse:
     name: analyse the module sources
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     permissions:
       contents: read

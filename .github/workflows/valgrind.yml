@@ -17,6 +17,7 @@ jobs:
   valgrind:
     name: run the suite under valgrind
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     # slow, and a pull request is already covered by Build & Test
     if: github.event_name != 'pull_request'
 

@@ -17,6 +17,7 @@ jobs:
   freebsd:
     name: build and test in a virtual machine
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     # every other workflow measures Linux, and the port this module is
     # packaged in is a FreeBSD one
 

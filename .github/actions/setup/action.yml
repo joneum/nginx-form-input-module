@@ -25,10 +25,33 @@ runs:
         if [ "$WANT_TEST_NGINX" = true ]; then
           packages="$packages cpanminus"
         fi
-        sudo apt-get update -qq
+
+        # A mirror that accepts the connection and then stops answering held
+        # this step for six hours, until GitHub killed the job at its own
+        # ceiling.  A step inside a composite action cannot carry
+        # timeout-minutes, so the bound is explicit, and a stall that clears
+        # on its own costs a retry instead of the whole run.
+        apt_get() {
+          attempt=1
+          while :; do
+            if timeout 180 sudo env DEBIAN_FRONTEND=noninteractive \
+                   apt-get -o DPkg::Lock::Timeout=60 "$@"; then
+              return 0
+            fi
+            if [ "$attempt" -ge 3 ]; then
+              echo "apt-get $1 failed three times, giving up" >&2
+              return 1
+            fi
+            echo "apt-get $1 failed, retrying ($attempt of 3)" >&2
+            attempt=$((attempt + 1))
+            sleep 5
+          done
+        }
+
+        apt_get update -qq
         # the list is deliberately split on whitespace
         # shellcheck disable=SC2086
-        sudo apt-get install -y --no-install-recommends $packages
+        apt_get install -y --no-install-recommends $packages
 
     - name: Cache Test::Nginx
       if: inputs.test-nginx == 'true'
@@ -41,5 +64,7 @@ runs:
       if: inputs.test-nginx == 'true'
       shell: bash
       run: |
-        cpanm --local-lib=~/perl5 --notest --quiet Test::Nginx
+        # same reason as the apt step: a CPAN mirror that stalls must not
+        # hold the job until the ceiling
+        timeout 300 cpanm --local-lib=~/perl5 --notest --quiet Test::Nginx
         echo "PERL5LIB=$HOME/perl5/lib/perl5" >> "$GITHUB_ENV"

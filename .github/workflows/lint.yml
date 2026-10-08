@@ -17,6 +17,7 @@ jobs:
   shell:
     name: shell scripts
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v7
@@ -42,6 +43,7 @@ jobs:
   workflows:
     name: workflow definitions
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v7

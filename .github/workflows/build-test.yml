@@ -17,6 +17,7 @@ jobs:
   pins:
     name: pins
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     # A matrix is read before any step of its own job runs, so the release
     # list has to arrive from an earlier job.  Which releases, and why this
     # module skips the 1.30 line, is written down in .github/versions.env.
@@ -34,6 +35,7 @@ jobs:
     name: nginx ${{ matrix.nginx }}
     needs: pins
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     strategy:
       fail-fast: false
@@ -55,6 +57,7 @@ jobs:
     name: loadable modules
     needs: pins
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v7
@@ -78,6 +81,7 @@ jobs:
     name: build without array-var
     needs: pins
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     # set_form_input_multi produces a value only array-var-nginx-module
     # can read, so nginx has to refuse the directive in a build without
     # it.  The suite cannot reach that case; it always builds array-var in.
