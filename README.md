@@ -6,6 +6,7 @@ request body into nginx variables.
 
 [![Build & Test][build-test-badge]][build-test-link]
 [![FreeBSD][freebsd-badge]][freebsd-link]
+[![Hostile][hostile-badge]][hostile-link]
 [![A/UBSan][sanitizers-badge]][sanitizers-link]
 [![Valgrind][valgrind-badge]][valgrind-link]
 [![Reload][reload-badge]][reload-link]
@@ -16,6 +17,8 @@ request body into nginx variables.
 [build-test-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/build-test.yml
 [freebsd-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/freebsd.yml/badge.svg
 [freebsd-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/freebsd.yml
+[hostile-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/hostile.yml/badge.svg
+[hostile-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/hostile.yml
 [sanitizers-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/sanitizers.yml/badge.svg
 [sanitizers-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/sanitizers.yml
 [valgrind-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/valgrind.yml/badge.svg

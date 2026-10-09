@@ -12,6 +12,45 @@ Newest first.  Dates are release dates.
 
 ### Added
 
+- A hostile-client test: `ci/hostile.sh` and a workflow of its own.  The
+  suite can only send a finished request -- one write, a correct
+  Content-Length, well formed -- and the shape of the buffer chain this
+  module walks is decided entirely by how the body arrives.  The temp file
+  path is not the gap; `t/bodyfile.t` covers that with seven cases, down to
+  `client_body_in_file_only` with a tiny body.  The gap is a body that
+  arrives over time and, above all, a **chunked** request body: there was
+  not one chunked request anywhere in `t/`.  Chunked is the sharp case
+  because the bytes on the wire are then not the body.  nginx has to strip
+  the framing first, and anything that reaches past the assembled chain
+  into the raw buffer gets chunk headers inside the field value.
+- The oracle is not a hard coded string.  The same body is sent once in a
+  single write and then again dripped seven bytes at a time, cut in the
+  middle of a percent escape, chunked in small chunks, and chunked large
+  enough to be spilled to a temp file; all four answers have to agree with
+  the single write.  Beyond that: a client that announces a hundred
+  thousand bytes and sends twenty, one that walks away in the middle of the
+  body, an empty body with the directive in place, and two bodies that end
+  in a broken percent escape.  The expected value is exact and needs no
+  assumption about escaping, because the module hands the field over
+  verbatim and leaves decoding to `set_unescape_uri` -- which `t/multipart.t`
+  nails down by sending `a+b%20c&d=e` and expecting it back unchanged.
+- Proven against a planted defect before it was written down.  With the
+  chain check taken out of the module, so that the first buffer is used
+  blindly, three oracles fire at once: the chunked value comes back as
+  `[a%2<CR><LF>9<CR><LF>Bb%20c%25]`, the large chunked request gets no
+  answer at all, and the error log carries `worker process exited on signal
+  11 (core dumped)`.
+- Recorded because it cost an iteration: the first draft had a case that
+  claimed to make a value straddle the buffer that went to the file and the
+  one still in memory.  The planted defect walked straight through it and
+  the case stayed green, so it proved nothing and was dropped.  nginx
+  flushes the whole body to the temp file, it does not leave a tail in
+  memory, so that chain never occurs.
+- What this cannot see: an over-read is only caught here when it changes
+  the answer or kills the worker.  Catching it as such is the sanitizer
+  job's work, and that one runs over the ordinary suite -- which is to say
+  not over a chunked body.
+
 - A reload test: `ci/reload.sh`, the per-module `ci/reload.conf` beside it,
   and a workflow of its own.  nginx is reloaded eight times in a row and
   after every one of them the module has to answer correctly, the worker

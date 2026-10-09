@@ -1,0 +1,40 @@
+name: Hostile
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    # Monday morning, so a new nginx release that breaks the module shows
+    # up here and not in somebody's build
+    - cron: '47 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hostile:
+    name: a client that misbehaves
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # The ordinary suite can only send a finished request: one write, a
+    # correct Content-Length, one in-memory buffer.  How the body arrives
+    # decides the shape of the buffer chain this module has to walk, so a
+    # body that drips, that is spilled to a file, or that is announced and
+    # never sent reaches code the suite never touches.
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup
+        with:
+          test-nginx: 'false'
+
+      - name: Build nginx
+        run: |
+          . .github/versions.env
+          ci/build.sh "$NGINX_VERSION" "$HOME/nginx"
+
+      - name: Drip, straddle, lie, walk away
+        run: ci/hostile.sh "$HOME/nginx/sbin/nginx"
