@@ -12,20 +12,20 @@ request body into nginx variables.
 [![CodeQL][codeql-badge]][codeql-link]
 [![Lint][lint-badge]][lint-link]
 
-[build-test-badge]: https://github.com/joneum/nginx-form-input-module/actions/workflows/build-test.yml/badge.svg
-[build-test-link]: https://github.com/joneum/nginx-form-input-module/actions/workflows/build-test.yml
-[freebsd-badge]: https://github.com/joneum/nginx-form-input-module/actions/workflows/freebsd.yml/badge.svg
-[freebsd-link]: https://github.com/joneum/nginx-form-input-module/actions/workflows/freebsd.yml
-[sanitizers-badge]: https://github.com/joneum/nginx-form-input-module/actions/workflows/sanitizers.yml/badge.svg
-[sanitizers-link]: https://github.com/joneum/nginx-form-input-module/actions/workflows/sanitizers.yml
-[valgrind-badge]: https://github.com/joneum/nginx-form-input-module/actions/workflows/valgrind.yml/badge.svg
-[valgrind-link]: https://github.com/joneum/nginx-form-input-module/actions/workflows/valgrind.yml
-[reload-badge]: https://github.com/joneum/nginx-form-input-module/actions/workflows/reload.yml/badge.svg
-[reload-link]: https://github.com/joneum/nginx-form-input-module/actions/workflows/reload.yml
-[codeql-badge]: https://github.com/joneum/nginx-form-input-module/actions/workflows/codeql.yml/badge.svg
-[codeql-link]: https://github.com/joneum/nginx-form-input-module/actions/workflows/codeql.yml
-[lint-badge]: https://github.com/joneum/nginx-form-input-module/actions/workflows/lint.yml/badge.svg
-[lint-link]: https://github.com/joneum/nginx-form-input-module/actions/workflows/lint.yml
+[build-test-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/build-test.yml/badge.svg
+[build-test-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/build-test.yml
+[freebsd-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/freebsd.yml/badge.svg
+[freebsd-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/freebsd.yml
+[sanitizers-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/sanitizers.yml/badge.svg
+[sanitizers-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/sanitizers.yml
+[valgrind-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/valgrind.yml/badge.svg
+[valgrind-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/valgrind.yml
+[reload-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/reload.yml/badge.svg
+[reload-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/reload.yml
+[codeql-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/codeql.yml/badge.svg
+[codeql-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/codeql.yml
+[lint-badge]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/lint.yml/badge.svg
+[lint-link]: https://github.com/sysadmin-labs/nginx-form-input-module/actions/workflows/lint.yml
 
 Description
 ===========
@@ -155,7 +155,7 @@ nginx refuses to start when that directive is used in a build without
 it, because nothing else can read the variable it produces.
 
 Released tarballs of this module are on the
-[tags page](https://github.com/joneum/nginx-form-input-module/tags).
+[tags page](https://github.com/sysadmin-labs/nginx-form-input-module/tags).
 
 Building as a dynamic module
 ----------------------------

@@ -4,6 +4,12 @@ Newest first.  Dates are release dates.
 
 ## Unreleased
 
+### Changed
+
+- The repository moved from `joneum` to the `sysadmin-labs` organization.
+  Badges and links in the README point to the new address; the old URLs
+  redirect.
+
 ### Added
 
 - A reload test: `ci/reload.sh`, the per-module `ci/reload.conf` beside it,
