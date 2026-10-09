@@ -6,6 +6,21 @@ Newest first.  Dates are release dates.
 
 ### Changed
 
+- The bounded apt call moved out of `.github/actions/setup` and into
+  `ci/apt-get.sh`, and the lint workflow now uses it instead of carrying a
+  second, unbounded copy.  Two things follow.  There is one implementation
+  of the bound and the retries rather than two that can drift apart, and
+  shellcheck actually sees it: the `shell` job checks every script under
+  `ci/`, while a `run:` block inside a workflow is invisible to it.
+- The lint workflow no longer installs shellcheck unconditionally.  The
+  runner image ships it, so the step only acts if that ever stops being
+  true -- and then through the same wrapper, because a stalled mirror must
+  not hold this job either.
+- The widened gate earned its keep on the spot: a comment in the new
+  script began with `# shellcheck`, which shellcheck reads as a directive
+  and then cannot parse -- SC1072 and SC1073, both errors.  The sentence is
+  reworded.  That line sat in a `run:` block before the move and nothing
+  would ever have looked at it.
 - The repository moved from `joneum` to the `sysadmin-labs` organization.
   Badges and links in the README point to the new address; the old URLs
   redirect.

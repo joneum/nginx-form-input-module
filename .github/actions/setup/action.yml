@@ -26,32 +26,13 @@ runs:
           packages="$packages cpanminus"
         fi
 
-        # A mirror that accepts the connection and then stops answering held
-        # this step for six hours, until GitHub killed the job at its own
-        # ceiling.  A step inside a composite action cannot carry
-        # timeout-minutes, so the bound is explicit, and a stall that clears
-        # on its own costs a retry instead of the whole run.
-        apt_get() {
-          attempt=1
-          while :; do
-            if timeout 180 sudo env DEBIAN_FRONTEND=noninteractive \
-                   apt-get -o DPkg::Lock::Timeout=60 "$@"; then
-              return 0
-            fi
-            if [ "$attempt" -ge 3 ]; then
-              echo "apt-get $1 failed three times, giving up" >&2
-              return 1
-            fi
-            echo "apt-get $1 failed, retrying ($attempt of 3)" >&2
-            attempt=$((attempt + 1))
-            sleep 5
-          done
-        }
-
-        apt_get update -qq
+        # The bound and the retries live in ci/apt-get.sh, because a step
+        # inside a composite action cannot carry timeout-minutes and
+        # because the lint workflow needs the same thing.
+        "$GITHUB_WORKSPACE/ci/apt-get.sh" update -qq
         # the list is deliberately split on whitespace
         # shellcheck disable=SC2086
-        apt_get install -y --no-install-recommends $packages
+        "$GITHUB_WORKSPACE/ci/apt-get.sh" install -y --no-install-recommends $packages
 
     - name: Cache Test::Nginx
       if: inputs.test-nginx == 'true'
